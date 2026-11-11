@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Emberhold">
+  <meta name="theme-color" content="#1c1612">
+  <meta name="format-detection" content="telephone=no">
+  <meta name="description" content="Crypts of Emberhold — a first-person party dungeon crawler. Original and offline.">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self'; media-src 'self' blob:; font-src 'self'; worker-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'none'">
+  <title>Crypts of Emberhold</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" type="image/png" href="icons/favicon.png">
+  <link rel="apple-touch-icon" href="icons/icon-180.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="icons/icon-180.png">
+  <link rel="apple-touch-icon" sizes="192x192" href="icons/icon-192.png">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+  <div id="app">
+    <section id="title-screen" class="screen" aria-label="Crypts of Emberhold">
+      <div class="logo-mark"><canvas id="title-icon" width="192" height="192" aria-hidden="true"></canvas></div>
+      <h1 class="game-title">Crypts of Emberhold</h1>
+      <p class="subtitle">Six will walk where one cannot</p>
+      <div class="menu-col">
+        <button type="button" class="btn btn-primary" id="btn-new">New Adventure</button>
+        <button type="button" class="btn" id="btn-quick">Quick Party</button>
+        <button type="button" class="btn" id="btn-continue">Continue</button>
+        <button type="button" class="btn btn-ghost" id="btn-help">How to Play</button>
+      </div>
+      <button type="button" class="icon-btn" id="btn-mute-title" aria-label="Mute" style="position:absolute;top:calc(12px + env(safe-area-inset-top));right:12px">🔊</button>
+      <p class="hint-foot">Works on a PC and on phones. Add it to your Home Screen to play offline.</p>
+    </section>
+
+    <section id="create-screen" class="screen hidden" aria-label="Assemble a party">
+      <div class="sheet">
+        <header class="sheet-header">
+          <button type="button" class="btn btn-ghost tiny" id="btn-create-back">Back</button>
+          <h2>Assemble a Party</h2>
+          <button type="button" class="btn btn-primary tiny" id="btn-create-start">Enter Emberhold</button>
+        </header>
+        <p class="subtitle" style="margin:0" id="create-hint">Up to six companions. You need at least one.</p>
+        <div id="party-slots" class="party-slots"></div>
+        <div class="row-actions">
+          <button type="button" class="btn" id="btn-add-char">Add Companion</button>
+          <button type="button" class="btn btn-ghost" id="btn-fill-quick">Fill a Quick Party</button>
+        </div>
+        <div id="creator" class="hidden">
+          <h3 style="color:var(--gold);margin:8px 0">New Companion</h3>
+          <div class="field">
+            <label for="char-name">Name</label>
+            <input id="char-name" maxlength="16" placeholder="A name" autocomplete="off">
+          </div>
+          <div id="class-grid" class="class-grid"></div>
+          <div class="stats-row" id="stat-row"></div>
+          <div class="row-actions">
+            <button type="button" class="btn" id="btn-reroll">Reroll Stats</button>
+            <button type="button" class="btn btn-primary" id="btn-accept-char">Accept</button>
+            <button type="button" class="btn btn-ghost" id="btn-cancel-char">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="play-screen" class="hidden" aria-label="Adventure">
+      <div class="top-bar">
+        <div class="where" id="where">Emberhold</div>
+        <div class="top-meta">
+          <span id="gold-read">0 gp</span>
+          <button type="button" class="icon-btn" id="btn-mute" aria-label="Mute" style="width:36px;height:36px">🔊</button>
+        </div>
+      </div>
+      <div id="view-wrap">
+        <canvas id="view" width="800" height="520"></canvas>
+        <canvas id="compass" width="96" height="96" aria-label="Compass"></canvas>
+        <canvas id="minimap" width="220" height="220" aria-label="Mini map"></canvas>
+        <div id="buffs"></div>
+      </div>
+      <div class="party-bar" id="party-bar"></div>
+      <div class="log" id="log" aria-live="polite"></div>
+      <div class="controls">
+        <div class="tool-col">
+          <button type="button" class="btn tiny" id="btn-map">Map</button>
+          <button type="button" class="btn tiny" id="btn-inv">Pack</button>
+          <button type="button" class="btn tiny" id="btn-spells">Spells</button>
+          <button type="button" class="btn tiny" id="btn-quests">Quests</button>
+          <button type="button" class="btn tiny" id="btn-camp">Camp</button>
+        </div>
+        <div class="pad" aria-label="Movement pad">
+          <button type="button" class="fwd" id="pad-fwd" aria-label="Step forward">▲</button>
+          <button type="button" class="sl" id="pad-sl" aria-label="Sidestep left">◀</button>
+          <button type="button" class="tl" id="pad-tl" aria-label="Turn left">↶</button>
+          <button type="button" class="act" id="pad-act" aria-label="Interact">●</button>
+          <button type="button" class="tr" id="pad-tr" aria-label="Turn right">↷</button>
+          <button type="button" class="sr" id="pad-sr" aria-label="Sidestep right">▶</button>
+          <button type="button" class="back" id="pad-back" aria-label="Step back">▼</button>
+        </div>
+        <div class="act-col">
+          <button type="button" class="btn tiny" id="btn-search">Search</button>
+          <button type="button" class="btn tiny" id="btn-menu">Menu</button>
+        </div>
+      </div>
+    </section>
+
+    <div id="modal" class="hidden" role="dialog" aria-modal="true">
+      <div class="modal-card">
+        <header class="modal-head" style="padding:10px 12px 0">
+          <h2 id="modal-title">Menu</h2>
+          <button type="button" class="btn btn-ghost tiny" id="btn-modal-close">Close</button>
+        </header>
+        <div class="modal-body" id="modal-body"></div>
+      </div>
+    </div>
+  </div>
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
