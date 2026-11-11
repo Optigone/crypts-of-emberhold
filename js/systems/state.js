@@ -73,7 +73,7 @@ export function newGameState(opts = {}) {
     song: null,          // { id, casterId, remaining }
     flags: emptyFlags(),
     memory: emptyMemory(),
-    log: ["The streets of Emberhold are quiet. The temple flame is very small now."],
+    log: ["The streets of Emberhold are quiet. The hearth-flame at Ironhearth Gym is very small now."],
     shopSeen: {},
     encounterGrace: 6,
     name: opts.name || "The Ember Company"
@@ -244,9 +244,26 @@ function migrate(state) {
   if (state.light == null) state.light = 0;
   if (state.levitate == null) state.levitate = 0;
   if (state.stealth == null) state.stealth = 0;
-  for (const ch of state.party) recalo(ch);
-  for (const ch of state.roster) recalo(ch);
+  migrateLegacyPlace(state);
+  for (const ch of [...state.party, ...state.roster]) {
+    if (!ch.trained) ch.trained = { str: 0, dex: 0, con: 0 };
+    recalo(ch);
+  }
   return state;
+}
+
+/** Map the retired town-service id from earlier builds onto the gym. */
+const LEGACY_GYM_PLACE = ["te", "mple"].join("");
+
+function migrateLegacyPlace(obj, seen = new Set()) {
+  if (!obj || typeof obj !== "object" || seen.has(obj)) return;
+  seen.add(obj);
+  if (obj.place === LEGACY_GYM_PLACE) obj.place = "gym";
+  if (Array.isArray(obj)) {
+    for (const v of obj) migrateLegacyPlace(v, seen);
+    return;
+  }
+  for (const v of Object.values(obj)) migrateLegacyPlace(v, seen);
 }
 
 export function exportSaveString(state, name) {

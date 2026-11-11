@@ -14,11 +14,11 @@ export const QUESTS = {
   fading_flame: {
     id: "fading_flame",
     name: "The Fading Flame",
-    giver: "Brother Halden",
+    giver: "Master Halden",
     steps: [
-      "Speak with Brother Halden in the Temple of the Ember.",
-      "Descend the Temple Crypts and recover the First Spark.",
-      "Return the First Spark to Brother Halden."
+      "Speak with Master Halden at Ironhearth Gym.",
+      "Descend the Undercity Crypts and recover the First Spark.",
+      "Return the First Spark to Master Halden."
     ]
   },
   mossdeep_plea: {
@@ -54,9 +54,9 @@ export const QUESTS = {
   ashen_march: {
     id: "ashen_march",
     name: "The Ashen March",
-    giver: "Brother Halden",
+    giver: "Master Halden",
     steps: [
-      "With four shards, Halden will bless the pass to the Ashen March.",
+      "With four shards, Master Halden will unbar the pass to the Ashen March.",
       "Enter the Emberforge Vaults and wrest the Cinder Core from the Colossus.",
       "Bring the last shard home."
     ]
@@ -64,10 +64,10 @@ export const QUESTS = {
   hollow_crown: {
     id: "hollow_crown",
     name: "The Hollow Crown",
-    giver: "Brother Halden",
+    giver: "Master Halden",
     steps: [
       "Gather all five shards of the Heartflame.",
-      "The temple's sealed door will open onto the Hollow Crown.",
+      "The sealed door in Ironhearth Gym will open onto the Hollow Crown.",
       "Defeat the Hollow King and restore the Heartflame."
     ]
   }
@@ -83,7 +83,7 @@ export const QUEST_ORDER = [
 ];
 
 export const RUMORS = [
-  "The temple flame is no larger than a candle now. Brother Halden looks tired.",
+  "The Heartflame in the gym hearth is no larger than a candle now. Master Halden looks tired.",
   "Nila the miner says Mossdeep is 'breathing odd' — green lights in the lower caves.",
   "Ma Trindle swears she still hears the old watchtower bell on foggy nights, south in the fen.",
   "Travelers take the east path into Thornwood and come back with leaves in their hair and no memory of the hour.",
@@ -93,6 +93,6 @@ export const RUMORS = [
   "A bard at the guild hummed a song that made the map on the table draw itself. Or so they claim.",
   "Pits in the deeper halls drop you if you aren't careful. A levitation charm is a kind friend.",
   "Some doors only look like walls. Search, or sing, or spend a spell.",
-  "If a ring feels wrong when you put it on, the temple can lift a curse. Don't panic. It happens.",
+  "If a ring feels wrong when you put it on, the medic at Ironhearth Gym can lift a curse. Don't panic. It happens.",
   "Five shards made the Heartflame, once. Five will make it again."
 ];

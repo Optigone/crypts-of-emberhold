@@ -25,7 +25,8 @@ Each device keeps its own saves in that browser. Use **Export Save** / **Import 
 ## Features
 
 - First-person step-and-turn view of grid halls: doors, secret doors, locked doors, stairs, pits, spinners, traps, dark zones, and wall messages
-- Town of Emberhold (inn, guild, shop, mage tower, temple, graveyard crypt, south gate) plus an overworld of Embervale, Thornwood, Mistfen, and the Ashen March
+- Town of Emberhold (inn, guild, shop, mage tower, Ironhearth Gym, graveyard crypt, south gate) plus an overworld of Embervale, Thornwood, Mistfen, and the Ashen March
+- Ironhearth Gym: pay gold to train Strength, Agility, or Endurance (costs rise with each session), and a medic's corner to heal, cure, revive, and lift curses
 - Six dungeons, fourteen hand-seeded floors, a quest line, and a final boss
 - Party of up to six: Warrior, Paladin, Rogue, Bard, Mage, Cleric — stats, HP/MP, leveling, equipment, packs
 - Learned spells and bard songs (level-up, shop tomes, found books): attack, heal, buffs, light, mapping, locate, teleport, summons, unlock, detect secrets, levitate, and more, with a per-character spellbook

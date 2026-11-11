@@ -300,7 +300,7 @@ export const MAP_DEFS = {
     start: { x: 16, y: 11, dir: 0 },
     events: {
       "15,4": { type: "door", place: "inn", label: "The Warm Hearth Inn" },
-      "18,4": { type: "door", place: "temple", label: "Temple of the Ember" },
+      "18,4": { type: "door", place: "gym", label: "Ironhearth Gym" },
       "15,16": { type: "door", place: "shop", label: "Voss's Arms & Wares" },
       "18,16": { type: "door", place: "mage", label: "Quill's Tower" },
       "15,22": { type: "door", place: "guild", label: "The Ember Company" },
@@ -314,11 +314,11 @@ export const MAP_DEFS = {
       "16,10": { type: "sign", text: "A worn inscription: SIX WILL WALK WHERE ONE CANNOT." },
       "17,10": { type: "sign", text: "A worn inscription: SIX WILL WALK WHERE ONE CANNOT." },
       "16,1": { type: "sign", text: "A weathered plaque: EMBERHOLD, LAST LIGHT OF THE VALE." },
-      "13,11": { type: "npc", name: "Town Crier", text: "Hear it, hear it! The temple flame wanes! Brave company wanted — see the Ember Company, or Brother Halden!" }
+      "13,11": { type: "npc", name: "Town Crier", text: "Hear it, hear it! The Heartflame in the gym hearth wanes! Brave company wanted — see the Ember Company, or Master Halden at Ironhearth Gym!" }
     },
     signs: {
       "15,7": "The Warm Hearth Inn — beds, bread, and a book for your travels.",
-      "18,7": "Temple of the Ember — all are welcome, the living and the lost.",
+      "18,7": "Ironhearth Gym — train hard, mend faster. The hearth is open to all.",
       "15,19": "Voss's Arms & Wares — fair steel, fair prices.",
       "18,19": "Magister Quill — spells, scrolls, and second sight.",
       "15,26": "The Ember Company — adventurers' guild. Come in, come in.",
@@ -434,22 +434,22 @@ export const MAP_DEFS = {
 
 /** Dungeon floor specifications (seeded + curated). */
 const DUNGEONS = [
-  // Temple Crypts — 3 floors
+  // Undercity Crypts — 3 floors
   {
-    id: "crypt_1", name: "Temple Crypts, Upper Halls", kind: "dungeon", theme: "crypt", music: "dungeon",
+    id: "crypt_1", name: "Undercity Crypts, Upper Halls", kind: "dungeon", theme: "crypt", music: "dungeon",
     light: "dark", encounter: "crypt", danger: 0,
     gen: { seed: 0xC0FF01, w: 24, h: 24, rooms: 8, loops: 3, secrets: 2, chests: 3, traps: 3, spinners: 1, stairsUp: true, stairsDown: true, lootMinor: "crypt-minor", lootMajor: "crypt-major", message: "Carved in the lintel: BE KIND TO THE SLEEPING." },
     entranceFrom: { map: "town", x: 16, y: 23, dir: 3 },
     next: "crypt_2", prev: "town"
   },
   {
-    id: "crypt_2", name: "Temple Crypts, The Ossuary", kind: "dungeon", theme: "crypt", music: "dungeon",
+    id: "crypt_2", name: "Undercity Crypts, The Bone Vaults", kind: "dungeon", theme: "crypt", music: "dungeon",
     light: "dark", encounter: "crypt", danger: 1,
     gen: { seed: 0xC0FF02, w: 24, h: 24, rooms: 9, loops: 3, secrets: 2, chests: 3, traps: 4, spinners: 1, darkZones: 1, stairsUp: true, stairsDown: true, lootMinor: "crypt-minor", lootMajor: "crypt-major", locked: { count: 1, key: "bronze" }, message: "Names, many names, cut small into the stone." },
     next: "crypt_3", prev: "crypt_1"
   },
   {
-    id: "crypt_3", name: "Temple Crypts, The Warden's Vault", kind: "dungeon", theme: "crypt", music: "dungeon",
+    id: "crypt_3", name: "Undercity Crypts, The Warden's Vault", kind: "dungeon", theme: "crypt", music: "dungeon",
     light: "dark", encounter: "crypt", danger: 1, boss: "crypt_warden",
     gen: { seed: 0xC0FF03, w: 22, h: 22, rooms: 7, loops: 2, secrets: 1, chests: 2, traps: 3, stairsUp: true, stairsDown: false, lootMinor: "crypt-minor", lootMajor: "crypt-major", message: "A last inscription: THE SPARK IS NOT YOURS TO KEEP, ONLY TO CARRY." },
     prev: "crypt_2"

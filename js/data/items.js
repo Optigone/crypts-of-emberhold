@@ -91,7 +91,7 @@ export const ITEMS = {
   key_bronze: { id: "key_bronze", name: "Bronze Key", kind: "key", key: "bronze", value: 0, desc: "A common bronze key." },
   key_silver: { id: "key_silver", name: "Silver Key", kind: "key", key: "silver", value: 0, desc: "A silver key, cold to the touch." },
   key_gold: { id: "key_gold", name: "Gold Key", kind: "key", key: "gold", value: 0, desc: "A gold key engraved with a flame." },
-  key_crypt: { id: "key_crypt", name: "Crypt Key", kind: "key", key: "crypt", value: 0, desc: "A heavy iron key from the temple crypts." },
+  key_crypt: { id: "key_crypt", name: "Crypt Key", kind: "key", key: "crypt", value: 0, desc: "A heavy iron key from the undercity crypts." },
   shard_spark: { id: "shard_spark", name: "The First Spark", kind: "relic", relic: "spark", value: 0, unique: true, desc: "A pebble of living ember, first of the Heartflame shards." },
   shard_living: { id: "shard_living", name: "The Living Ember", kind: "relic", relic: "living", value: 0, unique: true, desc: "A warm stone webbed with root-light." },
   shard_bell: { id: "shard_bell", name: "The Bell's Heart", kind: "relic", relic: "bell", value: 0, unique: true, desc: "A bronze clapper that still hums." },
@@ -102,7 +102,7 @@ export const ITEMS = {
   art_heartblade: {
     id: "art_heartblade", name: "Heartflame Blade", kind: "weapon", wtype: "sword", slot: "weapon",
     atk: 12, plus: 3, elem: "fire", hands: 1, value: 0, unique: true, artifact: true,
-    desc: "A sword whose edge holds a quiet flame. Once the temple's ceremonial blade."
+    desc: "A sword whose edge holds a quiet flame. Once the hearth-guard's blade, hung above the Ironhearth."
   },
   art_lyre: {
     id: "art_lyre", name: "Lyre of Emberhold", kind: "weapon", wtype: "staff", slot: "weapon",

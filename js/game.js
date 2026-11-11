@@ -59,7 +59,7 @@ export function getState() {
 
 function snapshot() {
   return {
-    mapId: state.mapId, x: state.x, y: state.y, dir: state.dir,
+    mapId: state.mapId, x: state.x, y: state.y, dir: state.dir, place: state.place || null,
     gold: state.gold, steps: state.steps, light: state.light, levitate: state.levitate,
     party: state.party, flags: state.flags, log: state.log.slice(-5),
     name: state.name, relics: state.flags.relics
@@ -189,7 +189,7 @@ function beginAdventure(party) {
   sel = 0;
   inspectUid = null;
   enterPlay();
-  pushLog(state, "You stand in the plaza of Emberhold. The temple flame is very small now.");
+  pushLog(state, "You stand in the plaza of Emberhold. The hearth-flame at Ironhearth Gym is very small now.");
 }
 
 function enterPlay() {
@@ -599,7 +599,7 @@ function openPlace(place, label) {
   pushLog(state, `You enter ${label || place}.`);
   if (place === "shop") return openShop("arms");
   if (place === "mage") return openShop("mage");
-  if (place === "temple") return openTemple();
+  if (place === "gym") return openGym();
   if (place === "inn") return openInn();
   if (place === "guild") return openGuild();
   syncHud();
@@ -637,9 +637,70 @@ function openShop(mode) {
   ui.openModal(title, ui.shopHtml(title, flavor, shopStock, state.gold, mode));
 }
 
-function openTemple() {
-  modal = "temple";
-  ui.openModal("Temple of the Ember", ui.templeHtml(state));
+
+export function gymTrain(stat, who) {
+  if (!state) return { ok: false, reason: "No adventure is running." };
+  if (who != null) sel = who;
+  const ch = state.party[sel];
+  if (!ch) return { ok: false, reason: "No companion selected." };
+  if (!["str", "dex", "con"].includes(stat)) return { ok: false, reason: "Unknown exercise." };
+  if (!ch.trained) ch.trained = { str: 0, dex: 0, con: 0 };
+  const label = { str: "Strength", dex: "Agility", con: "Endurance" }[stat];
+  const cap = ui.TRAIN_CAP || 20;
+  if ((ch[stat] || 0) >= cap) {
+    pushLog(state, `${ch.name} is already at their peak ${label.toLowerCase()}.`);
+    sfx.error();
+    refreshModal();
+    return { ok: false, reason: "Already at the peak." };
+  }
+  const cost = ui.trainCost(ch, stat);
+  if (state.gold < cost) {
+    pushLog(state, `Training ${label.toLowerCase()} costs ${cost} gp.`);
+    sfx.error();
+    return { ok: false, reason: "Not enough gold.", cost };
+  }
+  state.gold -= cost;
+  ch[stat] += 1;
+  ch.trained[stat] = (ch.trained[stat] || 0) + 1;
+  recalo(ch);
+  if (stat === "con" && ch.hp > 0 && !ch.unconscious) ch.hp = Math.min(ch.maxHp, ch.hp + 2);
+  pushLog(state, `${ch.name} works the Ironhearth dummies. ${label} is now ${ch[stat]} (−${cost} gp).`);
+  sfx.hit();
+  syncHud();
+  refreshModal();
+  return { ok: true, name: ch.name, stat, value: ch[stat], cost, gold: state.gold };
+}
+
+export function gymHeal() {
+  if (!state) return { ok: false, reason: "No adventure is running." };
+  const was = state.party.map((c) => c.hp);
+  const cost = 15 * state.party.length;
+  const beforeGold = state.gold;
+  doService("heal");
+  const healed = state.party.some((c, i) => c.hp > was[i]) || state.party.every((c) => c.unconscious || c.hp === c.maxHp);
+  return {
+    ok: state.gold < beforeGold || healed,
+    gold: state.gold,
+    cost,
+    hp: state.party.map((c) => ({ name: c.name, hp: c.hp, maxHp: c.maxHp }))
+  };
+}
+
+export function debugHurt(who = 0, hp = 1) {
+  if (!state) return false;
+  const ch = state.party[who];
+  if (!ch) return false;
+  ch.unconscious = false;
+  ch.hp = Math.max(1, Math.min(ch.maxHp - 1, hp));
+  syncHud();
+  return { name: ch.name, hp: ch.hp, maxHp: ch.maxHp };
+}
+
+export function openGym() {
+  if (!state) return false;
+  modal = "gym";
+  ui.openModal("Ironhearth Gym", ui.gymHtml(state, sel));
+  return true;
 }
 function openInn() {
   modal = "inn";
@@ -717,6 +778,7 @@ function onModalClick(e) {
   if (d.spell) { inspectSpell = d.spell; refreshModal(); return; }
   if (d.cast) return castFromBook(d.cast, d.target != null ? Number(d.target) : undefined);
   if (d.buy != null) return doBuy(Number(d.buy));
+  if (d.train) return gymTrain(d.train);
   if (d.service) return doService(d.service);
   if (d.save) return doSave(Number(d.save));
   if (d.load) return doLoad(Number(d.load));
@@ -735,7 +797,7 @@ function refreshModal() {
   else if (modal === "spells") openSpells();
   else if (modal === "quests") openQuests();
   else if (modal === "shop") openShop(shopMode);
-  else if (modal === "temple") openTemple();
+  else if (modal === "gym") openGym();
   else if (modal === "inn") openInn();
   else if (modal === "guild") openGuild();
   else if (modal === "save" || modal === "save-title") openSaveModal(modal === "save-title");
@@ -764,7 +826,7 @@ function doEquip(uid) {
   else {
     ch.pack.splice(idx, 1);
     for (const rem of r.removed) giveItem(ch, rem);
-    if (it.cursed) { pushLog(state, `${itemDisplayName(it)} feels unlucky, and will not come off. The temple can help.`); sfx.curse(); }
+    if (it.cursed) { pushLog(state, `${itemDisplayName(it)} feels unlucky, and will not come off. The medic at Ironhearth Gym can help.`); sfx.curse(); }
     else sfx.menu();
   }
   syncHud(); refreshModal();
@@ -981,7 +1043,7 @@ function doService(which) {
     openSell();
     return;
   }
-  if (which === "talk" && modal === "temple") return talkHalden();
+  if (which === "talk" && modal === "gym") return talkHalden();
   if (which === "talk" && modal === "inn") {
     const r = RUMORS[Math.floor(rng() * RUMORS.length)];
     pushLog(state, `Ma Trindle: "${r}"`);
@@ -1000,7 +1062,7 @@ function doService(which) {
     if (state.gold < cost) { pushLog(state, "Not enough gold."); sfx.error(); return; }
     state.gold -= cost;
     for (const c of state.party) { if (!c.unconscious) { c.hp = c.maxHp; c.mp = c.maxMp; } }
-    pushLog(state, "Warm light closes your wounds.");
+    pushLog(state, "The medic wraps your wounds, and the ache eases.");
     sfx.heal();
     syncHud(); refreshModal();
     return;
@@ -1021,7 +1083,7 @@ function doService(which) {
     if (state.gold < cost) { pushLog(state, "Not enough gold."); sfx.error(); return; }
     state.gold -= cost;
     for (const c of down) { c.unconscious = false; c.hp = Math.max(1, Math.floor(c.maxHp * 0.5)); }
-    pushLog(state, "The fallen stir, breathing again.");
+    pushLog(state, "The medic brings the knocked-out around. They are shaky, but upright.");
     sfx.heal();
     syncHud(); refreshModal();
     return;
@@ -1097,20 +1159,20 @@ function talkHalden() {
   bumpQuest("fading_flame", 0);
   if (n === 0) {
     bumpQuest("fading_flame", 1);
-    pushLog(state, "Halden: \"The Heartflame was five shards, once. The first sleeps beneath the graveyard crypt. Bring it back, and I will tend it.\"");
+    pushLog(state, "Master Halden: \"The Heartflame was five shards, once. The first sleeps beneath the graveyard crypt. Bring it back, and I will tend the hearth.\"");
   } else if (n < 4) {
-    pushLog(state, `Halden: "You have ${n} shard${n > 1 ? "s" : ""}. The rest lie in Mossdeep, the fen-tower, and Thornwood. The March still sleeps."`);
+    pushLog(state, `Master Halden: "You have ${n} shard${n > 1 ? "s" : ""}. The rest lie in Mossdeep, the fen-tower, and Thornwood. The March still sleeps."`);
     if (n >= 1) bumpQuest("fading_flame", 2);
   } else if (n === 4) {
     state.flags.ashen_open = true;
     bumpQuest("ashen_march", 1);
-    pushLog(state, "Halden: \"Four shards. The northwest pass will open. The Cinder Core waits in the Emberforge. Be careful of the heat.\"");
+    pushLog(state, "Master Halden: \"Four shards. The northwest pass will open. The Cinder Core waits in the Emberforge. Be careful of the heat.\"");
   } else if (n >= 5 && !state.flags.victory) {
     state.flags.crown_open = true;
     bumpQuest("hollow_crown", 1);
-    pushLog(state, "Halden: \"Five. The sealed door in this temple will open onto the Hollow Crown. Restore the Heartflame, and the King will have nothing left to hold.\"");
+    pushLog(state, "Master Halden: \"Five. The sealed door in this hall will open onto the Hollow Crown. Restore the Heartflame, and the King will have nothing left to hold.\"");
   } else {
-    pushLog(state, "Halden tends the bright flame and smiles, very tired and very glad.");
+    pushLog(state, "Master Halden tends the bright hearth and smiles, very tired and very glad.");
   }
   sfx.menu();
   syncHud();
@@ -1419,7 +1481,7 @@ function finishCombat() {
 
 function showVictory() {
   modal = "victory";
-  ui.openModal("The Heartflame", `<p>The Hollow King sets his crown down, very gently, and is gone. In the temple far above, a flame no larger than a candle becomes a fire you can feel through the stone.</p>
+  ui.openModal("The Heartflame", `<p>The Hollow King sets his crown down, very gently, and is gone. In the hearth at Ironhearth Gym far above, a flame no larger than a candle becomes a fire you can feel through the stone.</p>
     <p>Emberhold will tell this story for a long time. The company of ${ui.esc(state.name)} will be in it.</p>
     <p class="gold-tag">You have restored the Heartflame.</p>
     <button type="button" class="btn btn-primary" data-nav="title">Return to Title</button>`);

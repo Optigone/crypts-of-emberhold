@@ -241,7 +241,7 @@ export function questsHtml(state) {
       <p>${esc(cur)}</p></div>`;
   }).join("");
   return `<p>Heartflame shards recovered:</p><div class="row-actions">${rel}</div>
-    <p style="color:var(--muted)">${state.flags.relics.length} / 5. ${state.flags.crown_open ? "The temple's sealed door stands open." : state.flags.ashen_open ? "The Ashen Pass is unlocked." : ""}</p>
+    <p style="color:var(--muted)">${state.flags.relics.length} / 5. ${state.flags.crown_open ? "The sealed door at Ironhearth Gym stands open." : state.flags.ashen_open ? "The Ashen Pass is unlocked." : ""}</p>
     ${items}`;
 }
 
@@ -281,7 +281,7 @@ export function helpHtml() {
     <h3 style="color:var(--gold)">On a phone</h3>
     <p>Use the D-pad to step and turn. The gold button in the middle interacts. Map, Pack, Spells, Quests, Search, and Camp are along the sides. Add the page to your Home Screen for a full-screen app that works offline.</p>
     <h3 style="color:var(--gold)">Adventure</h3>
-    <p>Buy gear at Voss's shop, spells at Quill's Tower, healing at the temple, and rest at the inn. The graveyard crypt begins the first descent. Light dark halls with torches or the Light spell. Search to find secret doors. Identify mystery items at the mage or with a scroll. Cursed gear is annoying, not frightening — the temple can lift it.</p>
+    <p>Buy gear at Voss's shop, spells at Quill's Tower, and rest at the inn. Ironhearth Gym will train your strength, agility, and endurance for gold, and the medic there can heal, revive, and lift a curse. The graveyard crypt begins the first descent. Light dark halls with torches or the Light spell. Search to find secret doors. Identify mystery items at the mage or with a scroll.</p>
     <p>In a fight: Fight, Parry, Cast, Sing, Use an item, or Run. Bards keep a song going to bolster the party.</p>
   </div>`;
 }
@@ -304,20 +304,54 @@ export function shopHtml(title, flavor, stock, gold, mode) {
     <button type="button" class="btn" data-service="sell">Sell from a pack</button>`;
 }
 
-export function templeHtml(state) {
+export const TRAIN_STATS = [
+  { id: "str", label: "Strength" },
+  { id: "dex", label: "Agility" },
+  { id: "con", label: "Endurance" }
+];
+
+export function trainCost(ch, stat) {
+  const n = (ch.trained && ch.trained[stat]) || 0;
+  return 50 * (n + 1);
+}
+
+export const TRAIN_CAP = 20;
+
+export function gymHtml(state, sel = 0) {
   const down = state.party.filter((c) => c.unconscious || c.hp <= 0).length;
   const hurt = state.party.some((c) => c.hp < c.maxHp || c.mp < c.maxMp || c.poison || c.status?.length);
   const healCost = 15 * state.party.length;
-  return `<p>Brother Halden tends a flame no larger than a candle. The temple smells of wax and old stone.</p>
+  const ch = state.party[sel] || state.party[0];
+  const tabs = state.party.map((c, i) =>
+    `<button type="button" data-sel="${i}" class="${i === sel ? "on" : ""}">${esc(c.name)}</button>`
+  ).join("");
+  const trains = TRAIN_STATS.map((s) => {
+    const cost = trainCost(ch, s.id);
+    const peaked = (ch[s.id] || 0) >= TRAIN_CAP;
+    return `<button type="button" class="shop-row" data-train="${s.id}" ${peaked ? "disabled" : ""}>
+      <span class="left"><span class="name">Train ${esc(s.label)}</span>
+      <span class="sub">${esc(ch.name)} · now ${s.label} ${ch[s.id]}${peaked ? " (peak)" : ""}</span></span>
+      <span class="gold-tag">${peaked ? "—" : cost + " gp"}</span>
+    </button>`;
+  }).join("");
+  return `<p>The hall smells of oil, chalk, and a low hearth-fire. Wooden dummies and iron weights line the wall. Master Halden keeps the Heartflame in the hearth — it is no larger than a candle now.</p>
     <div class="row-actions">
-      <button type="button" class="btn" data-service="talk">Speak with Halden</button>
-      <button type="button" class="btn" data-service="heal">Heal the party (${healCost} gp)</button>
-      <button type="button" class="btn" data-service="cure">Cure ailments (30 gp)</button>
-      <button type="button" class="btn" data-service="rez" ${down ? "" : "disabled"}>Resurrect (${down} × 100 gp)</button>
-      <button type="button" class="btn" data-service="uncurse">Lift curses (80 gp)</button>
+      <button type="button" class="btn" data-service="talk">Speak with Master Halden</button>
       ${state.flags.crown_open ? `<button type="button" class="btn btn-primary" data-service="crown">Enter the Hollow Crown</button>` : ""}
     </div>
-    <p style="color:var(--muted)">${hurt ? "Some among you could use a blessing." : "The party looks well enough."} Shards: ${state.flags.relics.length}/5.</p>`;
+    <h3 style="color:var(--gold);margin:12px 0 6px">Training</h3>
+    <p style="color:var(--muted);margin:0 0 6px">Pick a companion, then pay gold to raise Strength, Agility, or Endurance. Each session costs more than the last.</p>
+    <div class="tabs">${tabs}</div>
+    <p>Your purse: <span class="gold-tag">${state.gold} gp</span></p>
+    <div class="list">${trains}</div>
+    <h3 style="color:var(--gold);margin:12px 0 6px">Medic's corner</h3>
+    <div class="row-actions">
+      <button type="button" class="btn" data-service="heal">Heal the party (${healCost} gp)</button>
+      <button type="button" class="btn" data-service="cure">Cure ailments (30 gp)</button>
+      <button type="button" class="btn" data-service="rez" ${down ? "" : "disabled"}>Revive knocked-out (${down} × 100 gp)</button>
+      <button type="button" class="btn" data-service="uncurse">Lift curses (80 gp)</button>
+    </div>
+    <p style="color:var(--muted)">${hurt ? "Some among you could use a patch-up." : "The party looks well enough."} Shards: ${state.flags.relics.length}/5.</p>`;
 }
 
 export function innHtml() {

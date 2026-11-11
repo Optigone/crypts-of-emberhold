@@ -1,5 +1,5 @@
 /* Crypts of Emberhold — caches the app for fully offline play. */
-const CACHE = "emberhold-v2";
+const CACHE = "emberhold-v3";
 const ASSETS = [
   "./",
   "./index.html",

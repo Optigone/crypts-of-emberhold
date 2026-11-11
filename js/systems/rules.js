@@ -32,7 +32,8 @@ export function makeCharacter(opts, rng = Math.random) {
     pack: [],
     spells: opts.spells || startSpells(cls),
     unconscious: false,
-    poison: 0
+    poison: 0,
+    trained: { str: 0, dex: 0, con: 0 }
   };
   recalo(ch);
   ch.hp = ch.maxHp;

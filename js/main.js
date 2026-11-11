@@ -1,6 +1,6 @@
 /** Boot Crypts of Emberhold and expose a test API. */
 
-import { init, getState, startQuick, tryMove, turn, interact, search, openMap, openInv, openSpells, openQuests, doSave, doLoad, doExport, doImport, doCombat, debugTravel, debugFight, debugGive, forceLearn, debugRefill, applyWorldSpell, drawAppIcon } from "./game.js";
+import { init, getState, startQuick, tryMove, turn, interact, search, openMap, openInv, openSpells, openQuests, doSave, doLoad, doExport, doImport, doCombat, debugTravel, debugFight, debugGive, forceLearn, debugRefill, debugHurt, applyWorldSpell, drawAppIcon, openGym, gymTrain, gymHeal } from "./game.js";
 import { SPELLS } from "./data/spells.js";
 import { listSlots } from "./systems/state.js";
 import { isMuted, toggleMuted, setMuted, resume } from "./audio.js";
@@ -49,6 +49,10 @@ window.Emberhold = {
   debugGive,
   forceLearn,
   debugRefill,
+  debugHurt,
+  openGym,
+  gymTrain,
+  gymHeal,
   applyWorldSpell,
   drawAppIcon,
   listSlots,
